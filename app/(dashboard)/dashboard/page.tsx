@@ -17,7 +17,7 @@ export default async function DashboardPage() {
         </div>
         <div className="flex items-center gap-4">
           <CreateBoardButton />
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </div>
       </div>
 

@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/select'
 import { updateTask, deleteTask } from '@/lib/actions/tasks'
 import type { Task } from '@/types/database'
+import { useRouter } from 'next/navigation'
 
 interface TaskDialogProps {
   task: Task
@@ -41,6 +42,8 @@ export function TaskDialog({ task, boardId, open, onOpenChange }: TaskDialogProp
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
+  const router = useRouter()
+
   async function handleSave() {
     if (!title.trim()) return
     setSaving(true)
@@ -51,7 +54,7 @@ export function TaskDialog({ task, boardId, open, onOpenChange }: TaskDialogProp
         priority,
       })
       onOpenChange(false)
-      window.location.reload()
+      router.refresh()
     } catch (e) {
       console.error(e)
     } finally {
@@ -64,7 +67,7 @@ export function TaskDialog({ task, boardId, open, onOpenChange }: TaskDialogProp
     try {
       await deleteTask(task.id, boardId)
       onOpenChange(false)
-      window.location.reload()
+      router.refresh()
     } catch (e) {
       console.error(e)
     } finally {

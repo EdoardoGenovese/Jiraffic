@@ -46,7 +46,7 @@ export function CreateTaskButton({ columnId, boardId }: CreateTaskButtonProps) {
       setTitle('')
       setDescription('')
       setPriority('medium')
-      window.location.reload() // <- aggiungi questo
+      router.refresh()
     } catch (e) {
       console.error(e)
     } finally {
