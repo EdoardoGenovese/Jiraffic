@@ -18,8 +18,8 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-ki
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { AISuggestButton } from '../ai/AISuggestButton'
+import { AddTaskButton } from './AddTaskButton'
 import { BoardFilters } from './BoardFilters'
-import { CreateTaskButton } from './CreateTaskButton'
 import { SortableTaskCard } from './SortableTaskCard'
 import { TaskCard } from './TaskCard'
 
@@ -47,7 +47,6 @@ function DroppableColumn({ column, boardId, filteredTasks }: DroppableColumnProp
           ))}
         </div>
       </SortableContext>
-      <CreateTaskButton columnId={column.id} boardId={boardId} />
     </div>
   )
 }
@@ -159,7 +158,10 @@ export function BoardView({ board }: BoardViewProps) {
             onSearchChange={setSearch}
             onPriorityChange={setPriorityFilter}
           />
-          <AISuggestButton tasks={columns.flatMap(col => col.tasks)} boardId={board.id} />
+          <div className='flex gap-3'>
+            <AddTaskButton columns={columns} boardId={board.id} />
+            <AISuggestButton tasks={columns.flatMap(col => col.tasks)} boardId={board.id} />
+          </div>
         </div>
 
         <div className="flex gap-4 flex-1">
