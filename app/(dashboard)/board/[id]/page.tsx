@@ -5,6 +5,7 @@ import { BoardViewWrapper } from '@/components/features/board/BoardViewWrapper'
 import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { DeleteBoardButton } from '@/components/features/board/DeleteBoardButton'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 interface BoardPageProps {
   params: Promise<{ id: string }>
@@ -30,14 +31,15 @@ export default async function BoardPage({ params }: BoardPageProps) {
         <div className="flex items-center gap-3">
           <DeleteBoardButton boardId={board.id} boardName={board.name} />
           <UserButton />
+          <ThemeToggle />
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
-        <main className="flex-1 overflow-x-auto p-6">
+      <div className="flex flex-1 overflow-hidden items-start p-6 gap-6">
+        <main className="flex-1 overflow-x-auto">
           <BoardViewWrapper board={board} />
         </main>
-        <aside className="w-72 border-l p-4 overflow-y-auto hidden lg:block">
+        <aside className="w-72 shrink-0 border rounded-lg p-4 overflow-y-auto max-h-[calc(100vh-57px)] sticky top-6">
           <h2 className="font-medium text-sm mb-4">Activity</h2>
           <ActivityLog activity={activity} />
         </aside>

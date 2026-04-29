@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export default async function LandingPage() {
   const { userId } = await auth()
@@ -21,6 +22,7 @@ export default async function LandingPage() {
           <Link href="/sign-up">
             <Button size="sm">Get started</Button>
           </Link>
+          <ThemeToggle />
         </div>
       </nav>
 

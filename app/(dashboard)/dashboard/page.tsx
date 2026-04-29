@@ -2,6 +2,7 @@ import { getBoards } from '@/lib/actions/boards'
 import { BoardCard } from '@/components/features/board/BoardCard'
 import { CreateBoardButton } from '@/components/features/board/CreateBoardButton'
 import { UserButton } from '@clerk/nextjs'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export default async function DashboardPage() {
   const boards = await getBoards()
@@ -18,6 +19,7 @@ export default async function DashboardPage() {
         <div className="flex items-center gap-4">
           <CreateBoardButton />
           <UserButton />
+          <ThemeToggle />
         </div>
       </div>
 
