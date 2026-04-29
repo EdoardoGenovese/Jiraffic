@@ -6,6 +6,7 @@ import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { DeleteBoardButton } from '@/components/features/board/DeleteBoardButton'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { ActivityLogDrawer } from '@/components/features/activity/ActivityLogDrawer'
 
 interface BoardPageProps {
   params: Promise<{ id: string }>
@@ -39,10 +40,13 @@ export default async function BoardPage({ params }: BoardPageProps) {
         <main className="flex-1 overflow-x-auto">
           <BoardViewWrapper board={board} />
         </main>
-        <aside className="w-72 shrink-0 border rounded-lg p-4 overflow-y-auto max-h-[calc(100vh-57px)] sticky top-6">
+
+        <aside className="w-72 shrink-0 border rounded-lg p-4 overflow-y-auto max-h-[calc(100vh-57px)] sticky top-6 hidden lg:block">
           <h2 className="font-medium text-sm mb-4">Activity</h2>
           <ActivityLog activity={activity} />
         </aside>
+
+        <ActivityLogDrawer activity={activity} />
       </div>
     </div>
   )

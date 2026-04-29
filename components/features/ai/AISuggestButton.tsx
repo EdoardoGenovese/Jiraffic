@@ -36,10 +36,12 @@ export function AISuggestButton({ tasks, boardId }: AISuggestButtonProps) {
   const [loading, setLoading] = useState(false)
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [applying, setApplying] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function handleAnalyze() {
     setLoading(true)
     setSuggestions([])
+    setError(null)
     try {
       const res = await fetch('/api/ai', {
         method: 'POST',
@@ -47,11 +49,22 @@ export function AISuggestButton({ tasks, boardId }: AISuggestButtonProps) {
         body: JSON.stringify({ tasks }),
       })
 
-      const text = await res.text()
+      const data = await res.json()
 
-      const data = JSON.parse(text)
+      if (!res.ok) {
+        if (res.status === 429) {
+          setError(
+            'Whoops! Looks like the developer ran out of daily AI tokens. Try again tomorrow! 🪫'
+          )
+        } else {
+          setError(data.error ?? 'Something went wrong.')
+        }
+        return
+      }
+
       setSuggestions(data.suggestions ?? [])
     } catch (e) {
+      setError('Network error. Please try again.')
       console.error(e)
     } finally {
       setLoading(false)
@@ -102,18 +115,23 @@ export function AISuggestButton({ tasks, boardId }: AISuggestButtonProps) {
             priority suggestions.
           </p>
 
-          {suggestions.length === 0 ? (
+          {error && (
+            <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">
+              {error}
+            </p>
+          )}
+          {suggestions.length === 0 && !error ? (
             <Button onClick={handleAnalyze} disabled={loading}>
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <span className="animate-spin">⟳</span>
+                  <span className="animate-spin inline-block">⟳</span>
                   Analyzing...
                 </span>
               ) : (
                 '✦ Analyze Tasks'
               )}
             </Button>
-          ) : (
+          ) : !error ? (
             <>
               <div className="flex flex-col gap-3 max-h-72 overflow-y-auto">
                 {suggestions.map((s, i) => (
@@ -153,6 +171,10 @@ export function AISuggestButton({ tasks, boardId }: AISuggestButtonProps) {
                 </Button>
               </div>
             </>
+          ) : (
+            <Button onClick={handleAnalyze} disabled={loading}>
+              Try again
+            </Button>
           )}
         </div>
       </DialogContent>

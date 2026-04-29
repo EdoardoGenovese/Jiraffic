@@ -8,9 +8,10 @@ import type { Task } from '@/types/database'
 interface SortableTaskCardProps {
   task: Task
   boardId: string
+  onDialogOpenChange: (open: boolean) => void
 }
 
-export function SortableTaskCard({ task, boardId }: SortableTaskCardProps) {
+export function SortableTaskCard({ task, boardId, onDialogOpenChange }: SortableTaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
   })
@@ -23,7 +24,7 @@ export function SortableTaskCard({ task, boardId }: SortableTaskCardProps) {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskCard task={task} boardId={boardId} />
+      <TaskCard task={task} boardId={boardId} onDialogOpenChange={onDialogOpenChange} />
     </div>
   )
 }

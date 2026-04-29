@@ -72,7 +72,7 @@ export function AddTaskButton({ columns, boardId }: AddTaskButtonProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {columns.map((col) => (
+                {columns.map(col => (
                   <SelectItem key={col.id} value={col.id}>
                     {col.name}
                   </SelectItem>
@@ -86,8 +86,8 @@ export function AddTaskButton({ columns, boardId }: AddTaskButtonProps) {
               id="task-title"
               placeholder="e.g. Fix login bug"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+              onChange={e => setTitle(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleCreate()}
               autoFocus
             />
           </div>
@@ -97,13 +97,13 @@ export function AddTaskButton({ columns, boardId }: AddTaskButtonProps) {
               id="task-desc"
               placeholder="Add more details..."
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               rows={3}
             />
           </div>
           <div className="flex flex-col gap-2">
             <Label>Priority</Label>
-            <Select value={priority} onValueChange={(v) => setPriority(v as Task['priority'])}>
+            <Select value={priority} onValueChange={v => setPriority(v as Task['priority'])}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

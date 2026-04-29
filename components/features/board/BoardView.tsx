@@ -12,7 +12,7 @@ import {
   rectIntersection,
   useDroppable,
   useSensor,
-  useSensors
+  useSensors,
 } from '@dnd-kit/core'
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useRouter } from 'next/navigation'
@@ -29,9 +29,15 @@ interface DroppableColumnProps {
   column: ColumnWithTasks
   boardId: string
   filteredTasks: Task[]
+  onDialogOpenChange: (open: boolean) => void
 }
 
-function DroppableColumn({ column, boardId, filteredTasks }: DroppableColumnProps) {
+function DroppableColumn({
+  column,
+  boardId,
+  filteredTasks,
+  onDialogOpenChange,
+}: DroppableColumnProps) {
   const { setNodeRef } = useDroppable({ id: column.id })
 
   return (
@@ -43,7 +49,12 @@ function DroppableColumn({ column, boardId, filteredTasks }: DroppableColumnProp
       <SortableContext items={column.tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
         <div ref={setNodeRef} className="flex flex-col gap-2 flex-1 min-h-[40px]">
           {filteredTasks.map(task => (
-            <SortableTaskCard key={task.id} task={task} boardId={boardId} />
+            <SortableTaskCard
+              key={task.id}
+              task={task}
+              boardId={boardId}
+              onDialogOpenChange={onDialogOpenChange}
+            />
           ))}
         </div>
       </SortableContext>
@@ -61,6 +72,13 @@ export function BoardView({ board }: BoardViewProps) {
   const [activeColumnId, setActiveColumnId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [priorityFilter, setPriorityFilter] = useState<Priority>('all')
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: isDialogOpen ? Infinity : 8 },
+    })
+  )
 
   const router = useRouter()
 
@@ -70,12 +88,6 @@ export function BoardView({ board }: BoardViewProps) {
       const matchesPriority = priorityFilter === 'all' || task.priority === priorityFilter
       return matchesSearch && matchesPriority
     })
-  }
-
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
-
-  function findColumnOfTask(taskId: string) {
-    return columns.find(col => col.tasks.some(t => t.id === taskId))
   }
 
   function findTarget(id: string) {
@@ -158,7 +170,7 @@ export function BoardView({ board }: BoardViewProps) {
             onSearchChange={setSearch}
             onPriorityChange={setPriorityFilter}
           />
-          <div className='flex gap-3'>
+          <div className="flex gap-3">
             <AddTaskButton columns={columns} boardId={board.id} />
             <AISuggestButton tasks={columns.flatMap(col => col.tasks)} boardId={board.id} />
           </div>
@@ -171,6 +183,7 @@ export function BoardView({ board }: BoardViewProps) {
               column={column}
               boardId={board.id}
               filteredTasks={filterTasks(column.tasks)}
+              onDialogOpenChange={setIsDialogOpen}
             />
           ))}
         </div>
