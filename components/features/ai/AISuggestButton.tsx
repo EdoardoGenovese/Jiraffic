@@ -47,9 +47,7 @@ export function AISuggestButton({ tasks, boardId }: AISuggestButtonProps) {
         body: JSON.stringify({ tasks }),
       })
 
-      console.log('STATUS:', res.status)
       const text = await res.text()
-      console.log('RAW RESPONSE:', text)
 
       const data = JSON.parse(text)
       setSuggestions(data.suggestions ?? [])
