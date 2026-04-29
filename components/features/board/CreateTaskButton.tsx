@@ -1,8 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createTask } from '@/lib/actions/tasks'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,7 +10,6 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -21,7 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { createTask } from '@/lib/actions/tasks'
 import type { Task } from '@/types/database'
+import { useState } from 'react'
 
 interface CreateTaskButtonProps {
   columnId: string
@@ -35,8 +34,6 @@ export function CreateTaskButton({ columnId, boardId }: CreateTaskButtonProps) {
   const [priority, setPriority] = useState<Task['priority']>('medium')
   const [loading, setLoading] = useState(false)
 
-  const router = useRouter()
-
   async function handleCreate() {
     if (!title.trim()) return
     setLoading(true)
@@ -46,7 +43,7 @@ export function CreateTaskButton({ columnId, boardId }: CreateTaskButtonProps) {
       setTitle('')
       setDescription('')
       setPriority('medium')
-      router.refresh()
+      location.reload()
     } catch (e) {
       console.error(e)
     } finally {
