@@ -24,12 +24,13 @@ export function BoardCard({ board }: BoardCardProps) {
             {board.lastActivity && (
               <span>
                 Updated{' '}
-                {new Date(board.lastActivity).toLocaleDateString('en-US', {
+                {new Intl.DateTimeFormat('en-US', {
                   month: 'short',
                   day: 'numeric',
                   hour: '2-digit',
                   minute: '2-digit',
-                })}
+                  hour12: false,
+                }).format(new Date(board.lastActivity))}
               </span>
             )}
           </CardDescription>
