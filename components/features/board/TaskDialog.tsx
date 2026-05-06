@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,10 +11,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -24,21 +22,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { updateTask, deleteTask } from '@/lib/actions/tasks'
-import type { Task } from '@/types/database'
-import { useRouter } from 'next/navigation'
+import { Textarea } from '@/components/ui/textarea'
+import { deleteTask, moveTask, updateTask } from '@/lib/actions/tasks'
+import type { ColumnWithTasks, Task } from '@/types/database'
+import { useState } from 'react'
 
 interface TaskDialogProps {
   task: Task
   boardId: string
   open: boolean
   onOpenChange: (open: boolean) => void
+  columns?: ColumnWithTasks[]
+  showColumnSelect?: boolean
 }
 
-export function TaskDialog({ task, boardId, open, onOpenChange }: TaskDialogProps) {
+export function TaskDialog({
+  task,
+  boardId,
+  open,
+  onOpenChange,
+  columns,
+  showColumnSelect,
+}: TaskDialogProps) {
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description ?? '')
   const [priority, setPriority] = useState<Task['priority']>(task.priority)
+  const [columnId, setColumnId] = useState(task.column_id)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
@@ -51,25 +60,16 @@ export function TaskDialog({ task, boardId, open, onOpenChange }: TaskDialogProp
         description: description.trim() || null,
         priority,
       })
+      if (columnId !== task.column_id && columns) {
+        const newPosition = columns.find(c => c.id === columnId)?.tasks.length ?? 0
+        await moveTask(task.id, columnId, newPosition, boardId)
+      }
       onOpenChange(false)
-      location.reload()
+      window.location.reload()
     } catch (e) {
       console.error(e)
     } finally {
       setSaving(false)
-    }
-  }
-
-  async function handleDelete() {
-    setDeleting(true)
-    try {
-      await deleteTask(task.id, boardId)
-      onOpenChange(false)
-      location.reload()
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setDeleting(false)
     }
   }
 
@@ -87,9 +87,10 @@ export function TaskDialog({ task, boardId, open, onOpenChange }: TaskDialogProp
               value={title}
               onChange={e => setTitle(e.target.value)}
               autoFocus
+              maxLength={40}
             />
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 container">
             <Label htmlFor="edit-desc">Description</Label>
             <Textarea
               id="edit-desc"
@@ -97,20 +98,47 @@ export function TaskDialog({ task, boardId, open, onOpenChange }: TaskDialogProp
               onChange={e => setDescription(e.target.value)}
               rows={3}
               placeholder="Add more details..."
+              className="max-h-48 overflow-y-auto resize-none w-full min-w-0"
+              style={{
+                resize: 'none',
+                wordBreak: 'break-all',
+                overflowWrap: 'break-word',
+                whiteSpace: 'pre-wrap',
+              }}
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <Label>Priority</Label>
-            <Select value={priority} onValueChange={v => setPriority(v as Task['priority'])}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex justify-between">
+            <div className="flex flex-col gap-2">
+              <Label>Priority</Label>
+              <Select value={priority} onValueChange={v => setPriority(v as Task['priority'])}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {showColumnSelect && columns && (
+              <div className="flex flex-col gap-2">
+                <Label>Move to column</Label>
+                <Select value={columnId} onValueChange={setColumnId}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {columns.map(col => (
+                      <SelectItem key={col.id} value={col.id}>
+                        {col.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2 pt-2">
@@ -124,14 +152,18 @@ export function TaskDialog({ task, boardId, open, onOpenChange }: TaskDialogProp
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete task?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will permanently delete <strong>"{task.title}"</strong>. This action cannot
-                    be undone.
+                    This will permanently delete <strong>"{task.title}"</strong>.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={handleDelete}
+                    onClick={async () => {
+                      setDeleting(true)
+                      await deleteTask(task.id, boardId)
+                      onOpenChange(false)
+                      window.location.reload()
+                    }}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
                     Delete
@@ -139,13 +171,7 @@ export function TaskDialog({ task, boardId, open, onOpenChange }: TaskDialogProp
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onOpenChange(false)}
-              disabled={saving}
-            >
+            <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button size="sm" onClick={handleSave} disabled={saving || !title.trim()}>

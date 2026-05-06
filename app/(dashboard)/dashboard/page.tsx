@@ -3,6 +3,7 @@ import { BoardCard } from '@/components/features/board/BoardCard'
 import { CreateBoardButton } from '@/components/features/board/CreateBoardButton'
 import { UserButton } from '@clerk/nextjs'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { HeaderActions } from '@/components/layout/HeaderActions'
 
 export default async function DashboardPage() {
   const boards = await getBoards()
@@ -16,11 +17,7 @@ export default async function DashboardPage() {
             {boards.length} board{boards.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <CreateBoardButton />
-          <UserButton />
-          <ThemeToggle />
-        </div>
+        <HeaderActions isDashboard={true} />
       </div>
 
       {boards.length === 0 ? (

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import type { ActivityLog as ActivityLogType } from '@/types/database'
+import { useEffect, useState } from 'react'
 
 function formatDate(dateString: string): string {
   return new Intl.DateTimeFormat('en-US', {
@@ -37,7 +37,7 @@ export function ActivityLogDrawer({ activity }: ActivityLogDrawerProps) {
       </div>
 
       {open && (
-        <div className="lg:hidden fixed bottom-16 right-4 w-72 max-h-96 overflow-y-auto bg-background border rounded-lg p-4 shadow-xl z-50">
+        <div className="lg:hidden fixed bottom-16 right-4 w-84 max-h-96 overflow-y-auto bg-background border rounded-lg p-4 shadow-xl z-50">
           <h2 className="font-medium text-sm mb-4">Activity</h2>
           {activity.length === 0 ? (
             <p className="text-muted-foreground text-xs">No activity yet.</p>

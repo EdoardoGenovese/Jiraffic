@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import type { ColumnWithTasks, Task } from '@/types/database'
+import { useState } from 'react'
 import { TaskDialog } from './TaskDialog'
-import type { Task } from '@/types/database'
 
 const priorityColors = {
   low: 'secondary',
@@ -15,10 +15,18 @@ const priorityColors = {
 interface TaskCardProps {
   task: Task
   boardId: string
+  columns?: ColumnWithTasks[]
+  showColumnSelect?: boolean
   onDialogOpenChange?: (open: boolean) => void
 }
 
-export function TaskCard({ task, boardId, onDialogOpenChange }: TaskCardProps) {
+export function TaskCard({
+  task,
+  boardId,
+  columns,
+  showColumnSelect,
+  onDialogOpenChange,
+}: TaskCardProps) {
   const [open, setOpen] = useState(false)
 
   function handleOpenChange(value: boolean) {
@@ -43,7 +51,17 @@ export function TaskCard({ task, boardId, onDialogOpenChange }: TaskCardProps) {
         </CardContent>
       </Card>
 
-      <TaskDialog task={task} boardId={boardId} open={open} onOpenChange={handleOpenChange} />
+      <TaskDialog
+        task={task}
+        boardId={boardId}
+        open={open}
+        onOpenChange={v => {
+          setOpen(v)
+          onDialogOpenChange?.(v)
+        }}
+        columns={columns}
+        showColumnSelect={showColumnSelect}
+      />
     </>
   )
 }

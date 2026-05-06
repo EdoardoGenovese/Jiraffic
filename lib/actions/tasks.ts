@@ -1,9 +1,9 @@
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
 import { createClient } from '@/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
 import type { Task } from '@/types/database'
+import { auth } from '@clerk/nextjs/server'
+import { revalidatePath } from 'next/cache'
 
 export async function createTask(
   columnId: string,
@@ -54,9 +54,36 @@ export async function updateTask(
 
   const supabase = await createClient()
 
+  const { data: original } = await supabase
+    .from('tasks')
+    .select('title, description, priority')
+    .eq('id', taskId)
+    .single()
+
   const { error } = await supabase.from('tasks').update(updates).eq('id', taskId)
 
   if (error) throw new Error(error.message)
+
+  const changes: string[] = []
+
+  if (updates.title && updates.title !== original?.title) {
+    changes.push(`title to "${updates.title}"`)
+  }
+  if (updates.priority && updates.priority !== original?.priority) {
+    changes.push(`priority from ${original?.priority} to ${updates.priority}`)
+  }
+  if ('description' in updates && updates.description !== original?.description) {
+    changes.push('description updated')
+  }
+
+  if (changes.length > 0) {
+    await supabase.from('activity_log').insert({
+      board_id: boardId,
+      user_id: userId,
+      action: `Edited "${original?.title ?? 'task'}": ${changes.join(', ')}`,
+    })
+  }
+
   revalidatePath(`/board/${boardId}`)
 }
 

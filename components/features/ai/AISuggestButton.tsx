@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { updateTask } from '@/lib/actions/tasks'
 import type { Task } from '@/types/database'
+import { ArrowRight, Astroid } from 'lucide-react'
 
 interface Suggestion {
   id: number
@@ -145,7 +146,9 @@ export function AISuggestButton({ tasks, boardId }: AISuggestButtonProps) {
                         >
                           {tasks[i]?.priority}
                         </Badge>
-                        <span className="text-xs text-muted-foreground">→</span>
+                        <span className="text-xs text-muted-foreground">
+                          <ArrowRight className="inline" />
+                        </span>
                         <Badge variant={priorityColors[s.suggestedPriority]} className="text-xs">
                           {s.suggestedPriority}
                         </Badge>

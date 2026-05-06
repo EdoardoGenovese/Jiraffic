@@ -1,9 +1,11 @@
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import Giraffe from '@/public/giraffe.png'
+import { auth } from '@clerk/nextjs/server'
+import { ArrowRight, Astroid, Plus } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 export default async function LandingPage() {
   const { userId } = await auth()
@@ -27,7 +29,7 @@ export default async function LandingPage() {
       </nav>
 
       <section className="flex flex-col items-center justify-center text-center px-6 py-32 flex-1">
-        <Badge variant="outline" className="mb-6 font-mono text-xs tracking-widest"></Badge>
+        <Image alt="Giraffe icon" src={Giraffe} className="h-24 w-24" />
         <h1 className="text-5xl sm:text-6xl font-light tracking-tight mb-6 max-w-3xl">
           Boards that don't <span className="font-bold text-primary">require a manual</span>
         </h1>
@@ -38,7 +40,7 @@ export default async function LandingPage() {
         <div className="flex items-center gap-4 flex-wrap justify-center">
           <Link href="/sign-up">
             <Button size="lg" className="font-mono tracking-wide">
-              Start for free →
+              Start for free <ArrowRight className="inline" />
             </Button>
           </Link>
           <Link href="/sign-in">
@@ -91,7 +93,7 @@ export default async function LandingPage() {
           </p>
           <Link href="/sign-up">
             <Button size="lg" className="font-mono tracking-wide">
-              Create your first board →
+              Create your first board <ArrowRight className="inline" />
             </Button>
           </Link>
         </div>
@@ -101,7 +103,9 @@ export default async function LandingPage() {
         <span className="font-mono text-xs text-muted-foreground">
           🦒 jiraffic — {new Date().getFullYear()}
         </span>
-        <span className="font-mono text-xs text-muted-foreground">built with Next.js + AI</span>
+        <span className="font-mono text-xs text-muted-foreground">
+          built with Next.js <Plus className="inline w-2 h-2" /> AI
+        </span>
       </footer>
     </div>
   )

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -12,13 +12,14 @@ export function ThemeToggle() {
     setMounted(true)
   }, [])
 
-  if (!mounted) return <Button variant="ghost" size="sm" className="w-9 h-9" />
+  if (!mounted) return <Button variant="ghost" size="icon" className="w-9 h-9" />
 
   return (
     <Button
       variant="ghost"
-      size="sm"
+      size="icon"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+      aria-label="Theme toggle"
     >
       {resolvedTheme === 'dark' ? '☀️' : '🌙'}
     </Button>

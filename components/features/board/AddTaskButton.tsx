@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-import { createTask } from '@/lib/actions/tasks'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -12,7 +10,6 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -20,7 +17,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { createTask } from '@/lib/actions/tasks'
 import type { ColumnWithTasks, Task } from '@/types/database'
+import { Plus } from 'lucide-react'
+import { useState } from 'react'
 
 interface AddTaskButtonProps {
   columns: ColumnWithTasks[]
@@ -57,7 +58,7 @@ export function AddTaskButton({ columns, boardId }: AddTaskButtonProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" className="h-8 text-xs">
-          + Add Task
+          <Plus className="inline" /> Add Task
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -89,6 +90,7 @@ export function AddTaskButton({ columns, boardId }: AddTaskButtonProps) {
               onChange={e => setTitle(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleCreate()}
               autoFocus
+              maxLength={40}
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -99,6 +101,13 @@ export function AddTaskButton({ columns, boardId }: AddTaskButtonProps) {
               value={description}
               onChange={e => setDescription(e.target.value)}
               rows={3}
+              className="max-h-48 overflow-y-auto resize-none w-full min-w-0"
+              style={{
+                resize: 'none',
+                wordBreak: 'break-all',
+                overflowWrap: 'break-word',
+                whiteSpace: 'pre-wrap',
+              }}
             />
           </div>
           <div className="flex flex-col gap-2">

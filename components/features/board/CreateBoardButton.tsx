@@ -1,8 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createBoard } from '@/lib/actions/boards'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,6 +10,10 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { createBoard } from '@/lib/actions/boards'
+import { Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export function CreateBoardButton() {
   const [open, setOpen] = useState(false)
@@ -38,7 +39,9 @@ export function CreateBoardButton() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">+ New Board</Button>
+        <Button size="sm">
+          <Plus className="inline" /> New Board
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -53,6 +56,7 @@ export function CreateBoardButton() {
               value={name}
               onChange={e => setName(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleCreate()}
+              maxLength={30}
               autoFocus
             />
           </div>

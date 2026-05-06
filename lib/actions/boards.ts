@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { Board, Column, Task, ColumnWithTasks, BoardWithColumns } from '@/types/database'
 
-export async function getBoards(): Promise<Board[]> {
+export async function getBoards(): Promise<(Board & { lastActivity?: string })[]> {
   const { userId } = await auth()
   if (!userId) throw new Error('Unauthorized')
 
@@ -13,12 +13,26 @@ export async function getBoards(): Promise<Board[]> {
 
   const { data, error } = await supabase
     .from('boards')
-    .select('*')
+    .select(
+      `
+      *,
+      activity_log (
+        created_at
+      )
+    `
+    )
     .eq('owner_id', userId)
     .order('created_at', { ascending: false })
 
   if (error) throw new Error(error.message)
-  return data
+
+  return data.map((board: any) => ({
+    ...board,
+    lastActivity:
+      board.activity_log?.sort(
+        (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )[0]?.created_at ?? null,
+  }))
 }
 
 export async function createBoard(name: string): Promise<Board> {

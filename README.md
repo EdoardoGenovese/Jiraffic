@@ -14,8 +14,8 @@ A fast, minimal Kanban board with AI-powered priority suggestions — built with
 
 ## Features
 
-- **Kanban boards** — Create multiple boards, each with To Do / In Progress / Done columns
-- **Drag & Drop** — Move and reorder tasks across columns with full persistence
+- **Drag & Drop** — Move and reorder tasks across columns with full persistence *(desktop only)*
+- **Mobile Kanban** — On mobile, columns are replaced by collapsible accordions. Tasks can be moved between columns directly from the edit dialog.
 - **AI Priority Suggestions** — Powered by Gemini 2.0 Flash, analyzes your tasks and suggests priorities with reasoning
 - **Task management** — Create, edit, delete tasks with title, description and priority levels
 - **Smart filters** — Filter tasks by priority (high / medium / low) or search by name, with drag & drop still active
@@ -65,7 +65,7 @@ jiraffic/
 │   └── actions/                 # Server Actions (boards, tasks, activity)
 ├── types/
 │   └── database.ts              # Shared TypeScript types
-└── middleware.ts                # Clerk route protection
+└── proxy.ts                # Clerk route protection
 ```
 
 ---
@@ -182,6 +182,8 @@ npm run format     # Prettier format
 **SSR-safe DnD** — `BoardView` is loaded with `next/dynamic` and `ssr: false` to avoid hydration mismatches with dnd-kit, wrapped in a thin Client Component to comply with Next.js 15 constraints.
 
 **AI integration** — The Gemini API is called exclusively from a server-side API route (`/api/ai`). The API key is never exposed to the client.
+
+**Mobile layout** — On mobile the drag & drop is replaced by collapsible accordions, one per column. All filters and AI suggestions remain available. Tasks can be moved between columns via the edit dialog's column selector, which only appears on mobile (`showColumnSelect` prop).
 
 ---
 
